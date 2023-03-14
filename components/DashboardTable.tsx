@@ -3,10 +3,10 @@
 export default function DashboardTable() {
 
     const people = [
-        { name: 'House Owner 1', title: 'House Owner', email: 'example@example.com', role: 'House Owner' },
-        { name: 'House Owner 1', title: 'House Owner', email: 'example@example.com', role: 'House Owner' },
-        { name: 'House Owner 1', title: 'House Owner', email: 'example@example.com', role: 'House Owner' },
-        { name: 'House Owner 1', title: 'House Owner', email: 'example@example.com', role: 'House Owner' },
+        { customer: 'Customer 1', house: 'House 3', arrival: '28/2/2023', departure: '7/3/2023', status: 'Confimed' },
+        { customer: 'Customer 1', house: 'House 3', arrival: '28/2/2023', departure: '7/3/2023', status: 'Confimed' },
+        { customer: 'Customer 1', house: 'House 3', arrival: '28/2/2023', departure: '7/3/2023', status: 'Confimed' },
+        { customer: 'Customer 1', house: 'House 3', arrival: '28/2/2023', departure: '7/3/2023', status: 'Pending' },
     ]
         
     return (
@@ -30,16 +30,19 @@ export default function DashboardTable() {
                 <thead>
                     <tr>
                     <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 lg:pl-8">
-                        Name
+                        Customer
+                    </th>
+                    <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 lg:pl-8">
+                        Staying at
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Title
+                        Arrival
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Email
+                        Departure
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Role
+                        Status
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-6 lg:pr-8">
                         <span className="sr-only">Edit</span>
@@ -48,16 +51,24 @@ export default function DashboardTable() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                     {people.map((person) => (
-                    <tr key={person.email}>
+                    <tr key={person.customer}>
                         <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 lg:pl-8">
-                        {person.name}
+                        {person.customer}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.title}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.email}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.role}</td>
+                        <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 lg:pl-8">
+                        {person.house}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.arrival}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.status}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.status}</td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
                         <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                            Edit<span className="sr-only">, {person.name}</span>
+                            Manage<span className="sr-only">, {person.customer}</span>
+                        </a>
+                        </td>
+                        <td>
+                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                            Details<span className="sr-only">, {person.customer}</span>
                         </a>
                         </td>
                     </tr>
