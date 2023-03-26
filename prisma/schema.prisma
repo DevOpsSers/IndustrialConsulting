@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Bookings {
+  id         BigInt       @id @default(autoincrement())
+  visitor_id BigInt
+  house_id   BigInt
+  start_date DateTime     @db.Timestamp(6)
+  end_date   DateTime     @db.Timestamp(6)
+  created_at DateTime?    @default(now()) @db.Timestamptz(6)
+  Houses     Houses       @relation(fields: [house_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users      Users        @relation(fields: [visitor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  MeterReads MeterReads[]
+}
+
+model Houses {
+  id             BigInt     @id @default(autoincrement())
+  owned_by       BigInt
+  address_line_1 String?
+  address_line_2 String?
+  image_url      String?
+  house_name     String?
+  created_at     DateTime?  @default(now()) @db.Timestamptz(6)
+  Bookings       Bookings[]
+  Users          Users      @relation(fields: [owned_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model MeterReads {
+  id         BigInt    @id @default(autoincrement())
+  booking_id BigInt
+  posted_by  BigInt
+  value      BigInt
+  img_url    String
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  Bookings   Bookings  @relation(fields: [booking_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users      Users     @relation(fields: [posted_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Users {
+  id           BigInt       @id @default(autoincrement())
+  email        String       @unique
+  password     String
+  role         String       @default("user")
+  phone_number String?
+  name         String?
+  surname      String?
+  status       String       @default("pending")
+  created_at   DateTime?    @default(now()) @db.Timestamptz(6)
+  Bookings     Bookings[]
+  Houses       Houses[]
+  MeterReads   MeterReads[]
+}
