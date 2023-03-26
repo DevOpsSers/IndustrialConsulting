@@ -7,70 +7,66 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Homeowner {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String
+  energyTariff  Float
+  homes         Home[]
+  meterReadings MeterReading[]
+}
+
 model Home {
-  id                Int       @id @default(autoincrement())
-  name              String
-  tariff            Float?
-  buffer            Float?
-  meterInstructions String?
-  meterLink         String?
-  agency            Agency?   @relation(fields: [agencyId], references: [id])
-  agencyId          Int?
-  visits            Visit[]
-  bookings          Booking[]
+  id           Int       @id @default(autoincrement())
+  name         String
+  address      String
+  instructions String?
+  homeowner    Homeowner @relation(fields: [homeownerId], references: [id])
+  homeownerId  Int
+  stays        Stay[]
+  Agency       Agency?   @relation(fields: [agencyId], references: [id])
+  agencyId     Int?
 }
 
 model Agency {
-  id      Int      @id @default(autoincrement())
-  name    String
-  homes   Home[]
+  id           Int    @id @default(autoincrement())
+  name         String
+  email        String @unique
+  password     String
+  energyTariff Float
+  homes        Home[]
 }
 
-model Visit {
-  id             Int              @id @default(autoincrement())
-  startDate      DateTime
-  endDate        DateTime
-  guestReadings  VisitReading[]
-  home           Home            @relation(fields: [homeId], references: [id])
-  homeId         Int
+model Visitor {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  password     String
+  stays        Stay[]
+  MeterReading MeterReading[]
 }
 
-model VisitReading {
-  id           Int      @id @default(autoincrement())
-  readingTime  DateTime
-  guestValue   Float
-  ownerValue   Float
-  image        String
-  visit        Visit    @relation(fields: [visitId], references: [id])
-  visitId      Int
+model Stay {
+  id            Int            @id @default(autoincrement())
+  startDate     DateTime
+  endDate       DateTime
+  home          Home           @relation(fields: [homeId], references: [id])
+  homeId        Int
+  visitor       Visitor?       @relation(fields: [visitorId], references: [id])
+  visitorId     Int?
+  meterReadings MeterReading[]
 }
 
-model Booking {
-  id           Int      @id @default(autoincrement())
-  startDate    DateTime
-  endDate      DateTime
-  home         Home     @relation(fields: [homeId], references: [id])
-  homeId       Int
-  guest        Guest    @relation(fields: [guestId], references: [id])
-  guestId      Int
-  guestReadings BookingReading[]
-}
-
-model Guest {
-  id            Int              @id @default(autoincrement())
-  name          String
-  bookings      Booking[]
-  guestReadings BookingReading[]
-}
-
-model BookingReading {
-  id           Int       @id @default(autoincrement())
-  readingTime  DateTime
-  guestValue   Float
-  ownerValue   Float
-  image        String
-  booking      Booking   @relation(fields: [bookingId], references: [id])
-  bookingId    Int
-  guest        Guest     @relation(fields: [guestId], references: [id])
-  guestId      Int
+model MeterReading {
+  id          Int        @id @default(autoincrement())
+  date        DateTime
+  reading     Int
+  image       String
+  homeowner   Homeowner? @relation(fields: [homeownerId], references: [id])
+  homeownerId Int?
+  visitor     Visitor?   @relation(fields: [visitorId], references: [id])
+  visitorId   Int?
+  stay        Stay?      @relation(fields: [stayId], references: [id])
+  stayId      Int?
 }
