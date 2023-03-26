@@ -10,74 +10,76 @@ export default function DashboardTable() {
     ]
         
     return (
-        <div className="px-6 lg:px-8">
-        <div className="sm:flex sm:items-center">
-            <div className="sm:flex-auto">
-            </div>
-            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-            <button
-                type="button"
-                className="block rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-                Add user
-            </button>
-            </div>
-        </div>
-        <div className="mt-8 flow-root">
-            <div className="-my-2 -mx-6 overflow-x-auto lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle">
+        <div className="-ml-16">
+            <div className="mt-8 pt-8 pb-8 font-bold text-2xl">Bookings</div>
+            <div  className="bg-white rounded-lg -ml-3">  
+                <div className="p-6 font-semibold text-md flex  space-x-8 m-w-full">
+                    <div className="bg-blue-300 font-bold rounded-xl p-2 px-8">Upcoming</div>
+                    <div className="bg-blue-100 rounded-xl p-2 px-8">Passed</div>
+                    <div className="bg-blue-100 rounded-xl p-2 px-8">All Bookings</div>  
+                </div>
                 <table className="min-w-full divide-y divide-gray-300">
-                <thead>
-                    <tr>
-                    <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 lg:pl-8">
-                        Customer
-                    </th>
-                    <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 lg:pl-8">
-                        Staying at
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Arrival
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Departure
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Status
-                    </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-6 lg:pr-8">
-                        <span className="sr-only">Edit</span>
-                    </th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                    {people.map((person) => (
-                    <tr key={person.customer}>
-                        <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 lg:pl-8">
-                        {person.customer}
-                        </td>
-                        <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 lg:pl-8">
-                        {person.house}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.arrival}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.status}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.status}</td>
-                        <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
-                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                            Manage<span className="sr-only">, {person.customer}</span>
-                        </a>
-                        </td>
-                        <td>
-                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                            Details<span className="sr-only">, {person.customer}</span>
-                        </a>
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
+                    <thead>
+                        <tr className="font-bold text-left">
+                            <th scope="col" className="px-10 py-6">
+                                Customer
+                            </th>
+                            <th scope="col" className="px-10 py-6">
+                                Staying at
+                            </th>
+                            <th scope="col" className="px-10 py-6">
+                                Arrival
+                            </th>
+                            <th scope="col" className="px-10 py-6">
+                                Departure
+                            </th>
+                            <th scope="col" className="px-10 py-6">
+                                Status
+                            </th>
+                            <th scope="col" className="px-10 py-6">
+                                Details
+                            </th>
+                            <th scope="col" className="px-10 py-6"></th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white max-w-min">
+                        {people.map((person) => (
+                        <tr key={person.customer}>
+                            <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900"> 
+                                <div className="flex flex-shrink-0 bg-blue-50 rounded-xl">
+                                    <a href="#" className="group block w-full flex-shrink-0 p-2">
+                                        <div className="items-center">
+                                        <div>
+                                            <img
+                                            className="inline-block h-12 w-12 rounded-full"
+                                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                            alt=""
+                                            />
+                                        </div>
+                                        <div className="ml-3">
+                                            <p className="text-lg font-bold text-black">{person.customer}</p>
+                                        </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </td>
+                            <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900">
+                                {person.house}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.arrival}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.status}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.status}</td>
+                            <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium ">
+                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                    Manage<span className="sr-only">, {person.customer}</span>
+                                </a>
+                            </td>
+                        </tr>
+                        ))}
+                    </tbody>
                 </table>
             </div>
-            </div>
-        </div>
         </div>
     )
 }
