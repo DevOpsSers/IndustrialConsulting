@@ -4,21 +4,23 @@ import prisma from '../../lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { name, meterInstructions } = req.body;
+    // Create a new home
+    const { name, email, password, energyTariff } = req.body;
 
     const home = await prisma.home.create({
       data: {
         name,
-        meterInstructions,
+        email,
+        password,
+        energyTariff,
       },
     });
 
-    res.status(200).json(home);
+    res.json(home);
   } else if (req.method === 'GET') {
+    // Get all homes
     const homes = await prisma.home.findMany();
 
-    res.status(200).json(homes);
-  } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.json(homes);
   }
 }
