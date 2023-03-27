@@ -3,20 +3,18 @@ import prisma from "../../../prisma/client"
 
 export default async function Handler( req: NextApiRequest, res: NextApiResponse ){
     if(req.method === "GET"){
+
+        const {
+            query: { id }
+        } = req
+
         try{
             console.log('SUCCESS')
-            const data = await prisma.users.findMany({
-                select: {
-                    id: true,
-                    email: true,
-                    role: true,
-                    phone_number: true,
-                    name: true,
-                    surname: true,
-                    status:true,
-                    created_at:true,
-                }
-            })
+            const data = await prisma.users.findUnique({
+                where: {
+                  id: parseInt(id),
+                },
+              })
 
             const serializedData = JSON.parse(JSON.stringify(data, (key, value) => {
                 return typeof value === 'bigint' ? value.toString() : value;
@@ -30,7 +28,5 @@ export default async function Handler( req: NextApiRequest, res: NextApiResponse
             res.status(405).end();
 
         }
-    }else{
-        res.status(200).json({message: 'Wrong method'})
     }
 }
