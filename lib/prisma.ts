@@ -10,3 +10,4 @@ async function getHomesByHomeowner(homeownerId: number): Promise<Home[]> {
   })
   return homes
 }
+export default prisma;
