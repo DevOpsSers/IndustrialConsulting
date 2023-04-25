@@ -4,19 +4,70 @@ import prisma from "../../../prisma/client"
 export default async function Handler( req: NextApiRequest, res: NextApiResponse ){
     if(req.method === "GET"){
         try{
-            console.log('SUCCESS')
-            const data = await prisma.users.findMany({
-                select: {
-                    id: true,
-                    email: true,
-                    role: true,
-                    phone_number: true,
-                    name: true,
-                    surname: true,
-                    status:true,
-                    created_at:true,
-                }
-            })
+            let data;
+
+
+            if(req.query.section=="all"){
+
+                data = await prisma.user.findMany({
+                    select: {
+                        id: true,
+                        email: true,
+                        role: true,
+                        phone_number: true,
+                        name: true,
+                        image: true,
+                    },
+                })
+
+            }else if(req.query.section=="admins"){
+
+                data = await prisma.user.findMany({
+                    select: {
+                        id: true,
+                        email: true,
+                        role: true,
+                        phone_number: true,
+                        name: true,
+                        image: true,
+                    },
+                    where: {
+                        role: "admin",
+                    },
+                })
+
+            }else if(req.query.section=="visitors"){
+
+                data = await prisma.user.findMany({
+                    select: {
+                        id: true,
+                        email: true,
+                        role: true,
+                        phone_number: true,
+                        name: true,
+                        image: true,
+                    },
+                    where: {
+                        role: "visitor",
+                    },
+                })
+
+            }else{
+
+                data = await prisma.user.findMany({
+                    select: {
+                        id: true,
+                        email: true,
+                        role: true,
+                        phone_number: true,
+                        name: true,
+                        image: true,
+                    },
+                })
+
+            }
+
+            
 
             const serializedData = JSON.parse(JSON.stringify(data, (key, value) => {
                 return typeof value === 'bigint' ? value.toString() : value;

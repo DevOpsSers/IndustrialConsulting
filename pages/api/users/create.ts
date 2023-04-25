@@ -11,10 +11,12 @@ const userSchema = yup.object().shape({
 
 export default async function Handler( req: NextApiRequest, res: NextApiResponse ){
     if(req.method === "POST"){
+        console.log("PUTAMIDER")
+        console.log(req.query)
         
-        const user = await prisma.users.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
-                email: req.query.email,
+                email: req.body.email,
             },
         });
 
@@ -25,21 +27,15 @@ export default async function Handler( req: NextApiRequest, res: NextApiResponse
         try{
             
 
-            var validation = await userSchema.validate(req.query);
+            var validation = await userSchema.validate(req.body);
 
-            const { email, role, phone_number, name, surname, status, password} = req.query
+            const { email, role, phone_number, name} = req.body
 
-            await prisma.users.create({
-                data: { email, role, phone_number, name, surname, status, password}
+            await prisma.user.create({
+                data: { email, role, phone_number, name}
             })
 
-            // const serializedData = JSON.parse(JSON.stringify(data, (key, value) => {
-            //     return typeof value === 'bigint' ? value.toString() : value;
-            // }));
-
-            // res.status(200).json(serializedData)
-
-            res.status(200).json('exito')
+            res.status(200).json('Success')
         
         }catch(e){
             console.log(e)
