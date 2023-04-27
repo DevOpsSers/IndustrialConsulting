@@ -1,5 +1,5 @@
 import '../../styles/globals.css'
-import Navigation from '../../components/DashboardNavigation'
+import DashboardNavigation from '../../components/DashboardNavigation'
 import MobileNavigation from '../../components/MobileNavigation'
 
 export default function RootLayout({
@@ -12,12 +12,12 @@ export default function RootLayout({
       <head />
       <body className="lg:flex w-full h-full bg-green-100">
 
-        <div className="lg:w-3/12 hidden lg:block">
-          <Navigation/>
+        <div className="lg:w-3/12">
+          <DashboardNavigation/>
         </div>
-        <div className="w-12/12 lg:hidden">
+        {/* <div className="w-12/12 lg:hidden">
           <MobileNavigation/>
-        </div>
+        </div> */}
         <div className='w-8/12 h-screen ml-auto mr-auto'>
           {children}
         </div>
