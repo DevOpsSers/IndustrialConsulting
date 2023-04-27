@@ -11,7 +11,6 @@ import Image from "next/image";
 
 
 async function getUsers(section){
-
     const response = await fetch(`http://localhost:3000/api/users/getAll?section=${section}`)
     const data = await response.json()
     return data
@@ -45,7 +44,6 @@ export default function PeopleTable() {
     const { isSuccess, isError, mutate } = useMutation(
         (user: UserValues) => {
           setShowModal(false)
-          alert(JSON.stringify(user))
           return axios.post(
             "http://localhost:3000/api/users/create", user,
             { withCredentials: true }
@@ -77,10 +75,11 @@ export default function PeopleTable() {
                 />
             }
             <div  className="bg-white rounded-lg">  
-                <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 p-4 text-center">
+                <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 p-4 text-center">
                     <button className={`rounded-xl p-2 ${section=="all" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => changeSection('all')}>Everyone</button>
                     <button className={`rounded-xl p-2 ${section=="admins" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => changeSection('admins')}>Admins</button>
                     <button className={`rounded-xl p-2 ${section=="visitors" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => changeSection('visitors')}>Visitors</button>
+                    <button className={`rounded-xl p-2 ${section=="owners" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => changeSection('owners')}>Owners</button>
                     <div></div> 
                     <div className="bg-blue-100 rounded-xl p-2 hover:bg-blue-300 hover:cursor-pointer" onClick={() => setShowModal(true)}>+ Add User</div> 
                 </div>
@@ -113,7 +112,13 @@ export default function PeopleTable() {
                                                 <div className="font-bold">{people.name}</div>
                                                 <div>{people.email}</div>
                                                 <div>{people.phone_number}</div>
-                                            </div>   
+                                            </div> 
+                                            {people.role == "owner" && (
+                                                <div className="mt-2">    
+                                                    <div className="font-bold m-4">Owner of: {people.Houses.length} house(s)</div>
+                                                </div> 
+                                            )}  
+                                              
                                         </div> 
                                     </td>
                                     <td>

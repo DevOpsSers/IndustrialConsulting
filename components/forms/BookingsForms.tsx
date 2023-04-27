@@ -34,12 +34,16 @@ export default function BookingsForms(props: BookingFormProps) {
       defaultValues: {...values},
     });
   
-    useEffect(() => {
-      triggerReset && reset();
-    }, [triggerReset, reset]);
+    // useEffect(() => {
+    //   triggerReset && reset();
+    // }, [triggerReset, reset]);
 
   const [users, setUsers] = useState([])
   const [houses, setHouses] = useState([])
+  const [loadingHouses, setLoadingHouses] = useState(false)
+
+  const [startDate, setStartDate] = useState()
+  const [endDate, setEndDate] = useState()
   
   const [notReady, setLoading] = useState(false)
 
@@ -48,17 +52,37 @@ export default function BookingsForms(props: BookingFormProps) {
     fetch('http://localhost:3000/api/users/getAll')
       .then((res) => res.json())
       .then((data) => {
-        setUsers(data)
+        setUsers( data.filter(item => item.role === 'visitor'))
         setLoading(false)
       })
+  },  [])
 
-    fetch('http://localhost:3000/api/houses/getAll')
+  useEffect(() => {
+    if (startDate && endDate) {
+      getAvailableHouses();
+    }
+  },  [startDate, endDate])
+
+// function settingStartDate(value){
+//   setStartDate(value)
+
+// }
+
+// function settingEndDate(value){
+//   setEndDate(value)
+
+// }
+
+
+function getAvailableHouses(){
+  setLoadingHouses(true);
+  fetch(`http://localhost:3000/api/houses/getAll?start=${startDate}&end=${endDate}`)
     .then((res) => res.json())
     .then((data) => {
-      setHouses(data)
-      setLoading(false)
-    })
-  }, [])
+      setHouses(data);
+      setLoadingHouses(false);
+    });
+}
 
   if (notReady) return <p>Loading...</p>
 
@@ -103,35 +127,6 @@ export default function BookingsForms(props: BookingFormProps) {
             </div>
 
             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-                Stays At: 
-              </label>
-              <div className="mt-2 sm:col-span-2 sm:mt-0">
-                <select
-                  id="house_id"
-                  {...register("house_id", {required: true})}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                >
-                  <option disabled> Select a House</option>
-
-                  {houses.length > 0 ? (
-                    houses.map((house) => (
-                      <option key={house.id} value={house.id}>{house.id} :: {house.house_name} - {house.address_line1} {house.address_line2}. Owner: {house.Users.name}  {house.Users.email}</option> 
-                    ))) : (
-                    <tr>
-                        <td>No houses available</td>
-                    </tr>
-                  )}
-                </select>
-              </div>
-              <h3 className="font-bold text-red-600">
-                {errors.house_id && (
-                    <span data-test="name-error"> House is required</span>
-                )}
-              </h3>
-            </div>
-
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
               <label htmlFor="start_date" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
                 Arrival
               </label>
@@ -142,6 +137,7 @@ export default function BookingsForms(props: BookingFormProps) {
                   id="start_date"
                   autoComplete="start_date"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => setStartDate(e.target.value)}
                 />
               </div>
               <h3 className="font-bold text-red-600">
@@ -162,6 +158,7 @@ export default function BookingsForms(props: BookingFormProps) {
                   id="end_date"
                   autoComplete="end_date"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => setEndDate(e.target.value)}
                 />
               </div>
               <h3 className="font-bold text-red-600">
@@ -172,6 +169,37 @@ export default function BookingsForms(props: BookingFormProps) {
             </div>
 
             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
+                Stays At: 
+              </label>
+              <div className="mt-2 sm:col-span-2 sm:mt-0">
+
+              {!loadingHouses &&(
+                  <select
+                    id="house_id"
+                    {...register("house_id", {required: true})}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  >
+                    <option disabled> Select a House</option>
+
+                    {houses.length > 0 ? (
+                      houses.map((house) => (
+                        <option key={house.id} value={house.id} disabled={house.available==="false"}>{house.available=="true" && ("AVAILABLE")} {house.available=="false" && ("UNAVAILABLE")} {house.house_name} - {house.address_line1} {house.address_line2}. Owner: {house.name} </option> 
+                      ))) : (
+                      <tr>
+                          <td>No houses available</td>
+                      </tr>
+                    )}
+                  </select>)}
+              </div>
+              <h3 className="font-bold text-red-600">
+                {errors.house_id && (
+                    <span data-test="name-error"> House is required</span>
+                )}
+              </h3>
+            </div>
+
+            {/* <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
               <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
                 Status
               </label>
@@ -191,7 +219,7 @@ export default function BookingsForms(props: BookingFormProps) {
                     <span data-test="name-error"> Status is required</span>
                 )}
               </h3>
-            </div>
+            </div> */}
             <div className="flex items-center justify-end pt-6 border-solid border-slate-200 rounded-b">
               <input
                 className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"

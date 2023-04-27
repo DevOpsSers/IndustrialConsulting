@@ -54,7 +54,7 @@ export default function HousesForms(props: HouseFormProps) {
     fetch('http://localhost:3000/api/users/getAll')
       .then((res) => res.json())
       .then((data) => {
-        setUsers(data)
+        setUsers(data.filter(item => item.role === 'owner'))
         setLoading(false)
       })
   }, [])
@@ -69,7 +69,7 @@ export default function HousesForms(props: HouseFormProps) {
     if(!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || !process.env.NEXT_PUBLIC_CLOUDINARY_PRESET){
         console.log("Enviroment variables are missing")
     }else{
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const myWidget = cloudinary.createUploadWidget({
             cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, 
@@ -142,13 +142,13 @@ export default function HousesForms(props: HouseFormProps) {
                   {...register("owned_by", {required: true})}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
-                  <option disabled> Select a user</option>
+                  <option disabled> Select a house owner</option>
                   {users.length > 0 ? (
                     users.map((user) => (
                       <option key={user.id} value={user.id}>{user.name} - {user.email}</option> 
                       ))) : (
                     <tr>
-                        <td>No users available</td>
+                        <td>No house owners available</td>
                     </tr>
                   )}
                 </select>

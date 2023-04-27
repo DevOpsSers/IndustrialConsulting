@@ -6,12 +6,14 @@ import Script from 'next/script';
 
 const queryClient = new QueryClient();
 
-interface Props {
+type LayoutComponent<P = {}> = (props: LayoutProps & P) => JSX.Element;
+
+interface LayoutProps  {
   children: React.ReactNode;
   session: any;
 };
 
-export default function RootLayout({ children, session }: Props) {
+export default function RootLayout({ children, session,...rest }: LayoutProps ): JSX.Element {
 
   return (
     <html lang="en">

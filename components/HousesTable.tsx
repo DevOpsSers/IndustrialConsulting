@@ -12,26 +12,35 @@ import useCloudinary from "./hooks/useCloudinary";
 
 
 async function getHouses(){
-    const response = await fetch("http://localhost:3000/api/houses/getAll")
+    const response = await fetch(`http://localhost:3000/api/houses/getAll?start=${new Date().toISOString().slice(0,16)}&end=${new Date().toISOString().slice(0,16)}`)
     const data = await response.json()
     return data
 }
   
 export default function HousesTable() {
 
+    const [section, setSection] = useState("all");
+
     const [houses, setHouses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    async function fetchHouses() {
+    async function fetchHouses(section) {
         const data = await getHouses();
-        setHouses(data);
+
+        if (section == "empty"){
+            setHouses(data.filter(item => item.available === 'true'));
+        }else if (section == "occupied"){
+            setHouses(data.filter(item => item.available === 'false'));
+        }else{
+            setHouses(data)
+        }
+
         setIsLoading(false)
     }
 
-    useEffect(() => {
-        
-        fetchHouses();
-      }, []);
+    useEffect(() => {    
+        fetchHouses(section);
+    }, [section]);
 
 
     const { isSuccess, isError, mutate } = useMutation(
@@ -72,9 +81,9 @@ export default function HousesTable() {
             }
             <div  className="bg-white rounded-lg">  
                 <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 p-4 text-center">
-                    <button className="bg-blue-300 font-bold rounded-xl p-2">All Houses</button>
-                    <button className="bg-blue-100 rounded-xl p-2">Ocupied</button>
-                    <button className="bg-blue-100 rounded-xl p-2">Empty</button>
+                    <button className={`rounded-xl p-2 ${section=="all" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('all')}>All Bookings</button>
+                    <button className={`rounded-xl p-2 ${section=="empty" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('empty')}>Empty</button>
+                    <button className={`rounded-xl p-2 ${section=="occupied" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('occupied')}>Occupied</button>
                     <button></button> 
                     <button className="bg-blue-100 rounded-xl p-2 hover:bg-blue-300 hover:cursor-pointer" onClick={() => setShowModal(true)}>+ Add House</button> 
                 </div>
@@ -85,7 +94,7 @@ export default function HousesTable() {
                 <div className="table-auto w-full bg-white rounded-2xl">
                     {houses.length > 0 ? (
                         houses.map((house) => (
-                        <div className="bg-green-100 rounded-2xl flex m-8 lg:card-side bg-base-100 shadow-xl">
+                        <div key={house.id} className="bg-green-100 rounded-2xl flex m-8 lg:card-side bg-base-100 shadow-xl">
                             <div className="p-4 max-w-lg">
                                 <AdvancedImage className="rounded-2xl" cldImg={Cloudinary.image(house.image_url).resize(thumbnail().width(300).height(200))} />
                             </div>
@@ -94,10 +103,19 @@ export default function HousesTable() {
                                 <p>{house.address_line_1}</p>
                                 <p>{house.address_line_2}</p>
                                 <Link 
-                                    href={`/dashboard/houses/${house.id}`}
+                                    href={`/dashboard/houses/${house.house_id}`}
                                 >
                                     <button className="bg-blue-300 font-bold rounded-xl p-2 w-full m-8">See</button>
                                 </Link>
+                            </div>
+                            <div>
+                                {house.available =="false" && (
+                                    <p className="font-extrabold text-red-900 border-8 rounded-3xl border-red-900 p-2 m-8">Occupied</p>
+                                )}
+
+                                {house.available =="true" && (
+                                    <p className="font-extrabold text-green-900 border-8 rounded-3xl border-green-900 p-2 m-8">Empty</p>
+                                )}
                             </div>
                             
                         </div>))) : (

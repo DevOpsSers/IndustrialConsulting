@@ -2,11 +2,13 @@
 import { CalendarIcon, ChartBarIcon, FolderIcon, HomeIcon, InboxIcon, UsersIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import {useSession} from "next-auth/react"
 
 const navigation = [
   { name: 'Consumtion', icon: HomeIcon, href: '/visitors/meter_reads'},
-  { name: 'Bookings', icon: FolderIcon, href: '/dashboard/bookings'},
-  { name: 'Users', icon: UsersIcon, href: '/dashboard/people'},
+  { name: 'Bookings', icon: FolderIcon, href: '/visitors/bookings'},
+  // { name: 'Users', icon: UsersIcon, href: '/visitors/people'},
 ]
 
 function classNames(...classes: any) {
@@ -16,25 +18,25 @@ function classNames(...classes: any) {
 export default function Navigation() {
 
   const pathname = usePathname();
+  const {data: session} = useSession()
 
   return (
     <div className="flex h-screen flex-1 flex-col">
       <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
         <div className="flex flex-shrink-0 p-4 bg-green-300 rounded-xl m-6">
           <a href="#" className="group block w-full flex-shrink-0">
-            <div className="flex items-center">
-              <div>
-                <img
-                  className="inline-block h-20 w-20 rounded-full"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt=""
-                />
+          {session?.user  && (
+              <div className="flex items-center">
+                <div>
+                  <Image className="inline-block h-16 w-16 rounded-full" width={16} height={16} src={session.user.image}></Image>
+
+                </div>
+                <div className="ml-3">
+                  <p className="text-lg font-bold text-black">{session.user.name}</p>
+                  <p className="text-sm font-medium text-black group-hover:text-white">View profile</p>
+                </div>
               </div>
-              <div className="ml-3">
-                <p className="text-lg font-bold text-black">Tom Cook</p>
-                <p className="text-sm font-medium text-black group-hover:text-white">View profile</p>
-              </div>
-            </div>
+            )}
           </a>
         </div>
         <div className="m-4">

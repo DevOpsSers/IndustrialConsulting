@@ -1,10 +1,10 @@
-import BookingShow from "../../../../components/BookingShow/BookingShow"
+import PeopleShow from "../../../../components/people/PeopleShow"
 
-export default function Booking({params}){
+export default function User({params}){
     const id = params.id
     return( 
         <div className="m-5">
-                <BookingShow booking_id={id}/>
+                <PeopleShow user_id={id}/>
         </div>
          
     )

@@ -2,10 +2,13 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../prisma/client"
 import * as yup from 'yup';
 
-const userSchema = yup.object().shape({
-    name: yup.string().required(),
-    role: yup.string().oneOf(['admin', 'visitor', 'owner','stuff']),
-    status: yup.string().oneOf(['active', 'pending']),
+const houseSchema = yup.object().shape({
+    owned_by: yup.number().required().positive().integer(),
+    address_line_1: yup.string().required(),
+    address_line_2: yup.string().required(),
+    image_url: yup.string().url().nullable(),
+    house_name: yup.string().nullable(),
+    kw_h_cost: yup.number().required().positive().integer()
 });
 
 export default async function Handler( req: NextApiRequest, res: NextApiResponse ){
@@ -18,10 +21,9 @@ export default async function Handler( req: NextApiRequest, res: NextApiResponse
 
         try{
             console.log('SUCCESS')
-            const data = await prisma.bookings.findUnique({
-                include: { User: true, Houses: true }, 
+            const data = await prisma.houses.findUnique({
                 where: {
-                  id: Number(id),
+                  id: parseInt(id),
                 },
               })
 
@@ -42,18 +44,19 @@ export default async function Handler( req: NextApiRequest, res: NextApiResponse
 
         try{
 
-            var validation = await userSchema.validate(req.query);
+            var validation = await houseSchema.validate(req.query);
             console.log('SUCCESS')
-            const data = await prisma.users.update({
+            const data = await prisma.houses.update({
                 where: {
                     id: parseInt(id),
                 },
                 data: { 
-                    phone_number: req.query.phone_number, 
-                    role: req.query.role,
-                    name: req.query.name, 
-                    surname: req.query.surname, 
-                    status: req.query.status,
+                    owned_by: Number(req.query.owned_by),
+                    address_line_1: req.query.address_line_1,
+                    address_line_2: req.query.address_line_2,
+                    image_url: req.query.image_url,
+                    house_name: req.query.house_name,
+                    kw_h_cost: Number(req.query.kw_h_cost),
                 }
             })
 
@@ -74,14 +77,14 @@ export default async function Handler( req: NextApiRequest, res: NextApiResponse
         
         try{
             console.log('SUCCESS')
-            const data = await prisma.users.delete({
+            const data = await prisma.houses.delete({
                 where: {
                     id: parseInt(id),
                 },
             })
 
             
-            res.status(200).json(`User ${id} succesfully deleted`)
+            res.status(200).json(`House ${id} succesfully deleted`)
         
         }catch(e){
             console.log(e)

@@ -6,6 +6,11 @@ import { useMutation } from "react-query"
 import axios from "axios";
 import Alert from "./utils/Alert";
 import Link from 'next/link'
+import Image from 'next/image';
+
+import { thumbnail } from "@cloudinary/url-gen/actions/resize";
+import { AdvancedImage } from "@cloudinary/react";
+import useCloudinary from "./hooks/useCloudinary";
 
 
 async function getBookings(section){
@@ -58,6 +63,8 @@ export default function BookingsTable() {
       );
     
     const [showModal, setShowModal] = useState(false);
+
+    const {Cloudinary} = useCloudinary();
         
     return (
         <div className="">
@@ -99,62 +106,58 @@ export default function BookingsTable() {
 
                         {bookings.length > 0 ? (
                             bookings.map((booking) => (
-                                <tr key={booking.id}>
-                                    
-                                    <td>
-                                        <div className="flex m-2 bg-green-100 rounded-md">
-                                            <div className="m-2">
-                                                <img
-                                                className="inline-block h-16 w-16 rounded-md"
-                                                src={booking.Users.profile_picture_url}
-                                                alt=""
-                                                />
-                                            </div>
-                                            <div className="m-2">    
-                                                <div className="font-bold">{booking.Users.name} {booking.Users.surname}</div>
-                                                <div>{booking.Users.email}</div>
-                                                <div>{booking.Users.phone_number}</div>
-                                            </div>   
-                                        </div> 
-                                    </td>
-                                    <td>
-                                        <Link 
-                                            href={`/dashboard/houses/${booking.Houses.id}`}
-                                        >
-                                            <div className="flex m-2 bg-green-100 rounded-md hover:cursor-pointer hover:bg-green-200">
-                                                <div className="m-2">
-                                                    <img
-                                                    className="inline-block h-16 w-16 rounded-md"
-                                                    src={booking.Houses.image_url}
-                                                    alt=""
-                                                    />
-                                                </div>
-                                                <div className="m-2">    
-                                                    <div className="font-bold">{booking.Houses.house_name}</div>
-                                                    <div>{booking.Houses.address_line_1}</div>
-                                                    <div>{booking.Houses.address_line_2}</div>
-                                                </div>   
-                                            </div> 
-                                        </Link>
-                                    </td>
-                                    <td>
-                                        <div className="m-2 bg-green-100 rounded-md font-semibold p-2">
-                                           <div>{new Date(booking.start_date).toLocaleDateString('en-US', { timeZone: 'UTC' })}</div> 
-                                           <div>{new Date(booking.start_date).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', timeZone: 'UTC' })}</div> 
-                                        </div> 
-                                    </td>
-                                    <td>
-                                        <div className="m-2 bg-green-100 rounded-md font-semibold p-2">
-                                           <div>{new Date(booking.end_date).toLocaleDateString('en-US', { timeZone: 'UTC' })}</div> 
-                                           <div>{new Date(booking.end_date).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', timeZone: 'UTC' })}</div> 
-                                        </div> 
-                                    </td>
-                                    <td>
-                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                            Manage
-                                        </a>
-                                    </td>
-                                </tr>
+                                  <tr key={booking.id}>   
+                                      <td>
+                                          <div className="flex m-2 bg-green-100 rounded-md">
+                                              <div className="m-2">
+                                                  <Image className="inline-block h-16 w-16 rounded-full" width={16} height={16} src={booking.User.image} alt={booking.User}></Image>
+                                              </div>
+                                              <div className="m-2">    
+                                                  <div className="font-bold">{booking.User.name} {booking.User.surname}</div>
+                                                  <div>{booking.User.email}</div>
+                                                  <div>{booking.User.phone_number}</div>
+                                              </div>   
+                                          </div> 
+                                      </td>
+                                      <td>
+                                          <Link 
+                                              href={`/dashboard/houses/${booking.Houses.id}`}
+                                          >
+                                              <div className="flex m-2 bg-green-100 rounded-md hover:cursor-pointer hover:bg-green-200">
+                                                  <div className="m-2">
+                                                      <AdvancedImage className="rounded-2xl" cldImg={Cloudinary.image(booking.Houses.image_url).resize(thumbnail().width(150).height(100))} />
+                                                  </div>
+                                                  <div className="m-2">    
+                                                      <div className="font-bold">{booking.Houses.house_name}</div>
+                                                      <div>{booking.Houses.address_line_1}</div>
+                                                      <div>{booking.Houses.address_line_2}</div>
+                                                  </div>   
+                                              </div> 
+                                          </Link>
+                                      </td>
+                                      <td>
+                                          <div className="m-2 bg-green-100 rounded-md font-semibold p-2">
+                                             <div>{new Date(booking.start_date).toLocaleDateString('en-US', { timeZone: 'UTC' })}</div> 
+                                             <div>{new Date(booking.start_date).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', timeZone: 'UTC' })}</div> 
+                                          </div> 
+                                      </td>
+                                      <td>
+                                          <div className="m-2 bg-green-100 rounded-md font-semibold p-2">
+                                             <div>{new Date(booking.end_date).toLocaleDateString('en-US', { timeZone: 'UTC' })}</div> 
+                                             <div>{new Date(booking.end_date).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', timeZone: 'UTC' })}</div> 
+                                          </div> 
+                                      </td>
+                                      <td>
+                                        
+                                          <Link 
+                                              href={`/dashboard/bookings/${booking.id}`}
+                                          >
+                                              <div className="m-2 bg-green-100 rounded-md p-2 text-indigo-600 hover:text-indigo-900 font-bold">
+                                                  Manage
+                                              </div>
+                                          </Link>
+                                      </td>
+                                  </tr>
                                 ))
                         ) : (
                             <tr>
@@ -185,13 +188,13 @@ export default function BookingsTable() {
                                 className=" bg-red-400 float-right rounded-xl"
                                 onClick={() => setShowModal(false)}
                             >
-                                <span className="text-white p-2 pb-4 text-3xl">
+                                <span className="text-white p-2 mb-4 text-3xl">
                                 ×
                                 </span>
                             </button>
                         </div>
                         {/*body*/}
-                        <div className="relative pt-6 px-6 flex-auto">
+                        <div className="relative px-6 flex-auto">
                         <BookingsForms onSubmit={(r) => mutate(r)}/>
                         </div>
                         {/*footer*/}

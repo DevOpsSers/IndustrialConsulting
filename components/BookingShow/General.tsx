@@ -1,5 +1,12 @@
+import { thumbnail } from "@cloudinary/url-gen/actions/resize";
+import { AdvancedImage } from "@cloudinary/react";
+import useCloudinary from "./../hooks/useCloudinary";
+import Image from "next/image";
+
 export default function HouseShowGeneral({booking}) {
     
+    const {Cloudinary} = useCloudinary();
+
     return (
         <div className="m-8">
             <div className="flex">
@@ -12,22 +19,24 @@ export default function HouseShowGeneral({booking}) {
             </div> 
             <hr/>
             <div className="flex">
-                <div className="p-4 w-52">
-                    <img className="rounded-2xl" src={booking.Users.profile_picture_url} alt="Album"/>
+                <div className="p-4 w-32">
+                    <Image className="inline-block h-16 w-16 rounded-full" width={16} height={16} src={booking.User.image} alt={booking.User}></Image>
+
                 </div>
                 <div className="p-4">
-                    <h1  className="font-bold">{booking.Users.name} {booking.Users.surname}</h1>
-                    <p>{booking.Users.email}</p>
-                    <p>{booking.Users.phone_number}</p>
+                    <h1  className="font-bold">{booking.User.name} {booking.User.surname}</h1>
+                    <p>{booking.User.email}</p>
+                    <p>{booking.User.phone_number}</p>
                     <br/>
-                    <h1  className="font-bold">Since: {new Date(booking.created_at).toLocaleDateString('en-US', { timeZone: 'UTC' })}</h1>
-                    <h1  className="font-bold">Role: {booking.Users.role}</h1>
+                    <h1  className="font-bold">Member since: {new Date(booking.created_at).toLocaleDateString('en-US', { timeZone: 'UTC' })}</h1>
+                    <h1  className="font-bold">Role: {booking.User.role}</h1>
                 </div>
             </div> 
             <hr/>
             <div className="flex">
                 <div className="p-4  w-52">
-                    <img className="rounded-2xl" src={booking.Houses.image_url} alt="Album"/>
+                    <AdvancedImage className="rounded-2xl" cldImg={Cloudinary.image(booking.Houses.image_url).resize(thumbnail().width(150).height(100))} />
+
                 </div>
                 <div className="p-4">
                     <h1  className="font-bold">{booking.Houses.house_name}</h1>

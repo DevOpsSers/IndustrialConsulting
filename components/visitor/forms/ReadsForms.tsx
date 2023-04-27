@@ -1,36 +1,44 @@
+import {PlusCircleIcon, MinusCircleIcon, TrashIcon} from "@heroicons/react/24/outline"
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { useEffect, useState } from 'react'
 import {SubmitHandler, useForm} from "react-hook-form";
 
-export interface BookingFormProps {
-  onSubmit: SubmitHandler<BookingValues>;
+import { useSession } from 'next-auth/react';
+import { thumbnail } from "@cloudinary/url-gen/actions/resize";
+import { AdvancedImage } from "@cloudinary/react";
+import useCloudinary from "@/components/hooks/useCloudinary";
+import { Session } from "inspector";
+
+export interface ReadFormProps {
+  onSubmit: SubmitHandler<ReadValues>;
   isLoading?: boolean;
   triggerReset?: boolean;
-  values?: DatabaseBookingValues;
+  values?: DatabaseReadValues;
   label?: string;
+  currentBooking?: object; 
 }
 
-export interface BookingValues {
-  visitor_id: bigint;
-  house_id: bigint;
-  start_date: Date;
-  end_date: Date;
-  status: boolean;
+export interface ReadValues {
+  booking_id: number;
+  posted_by: string;
+  value: number;
+  kw_h_cost_when_created: number;
+  img_url: string;
 }
 
-export interface DatabaseBookingValues extends BookingValues {
+export interface DatabaseReadValues extends ReadValues {
   _id?: string;
 }
 
-export default function ReadsForms(props: BookingFormProps) {
-  const {onSubmit, isLoading, triggerReset, values} = props;
+export default function ReadsForms(props: ReadFormProps) {
+  const {onSubmit, isLoading, triggerReset, values, currentBooking} = props;
   const {
       register,
       unregister,
       handleSubmit,
       formState: {errors},
       reset,
-    } = useForm<BookingValues>({
+    } = useForm<ReadValues>({
       defaultValues: {...values},
     });
   
@@ -38,149 +46,115 @@ export default function ReadsForms(props: BookingFormProps) {
       triggerReset && reset();
     }, [triggerReset, reset]);
 
-  const [users, setUsers] = useState([])
-  const [houses, setHouses] = useState([])
-  
-  const [notReady, setLoading] = useState(false)
 
-  useEffect(() => {
-    setLoading(true)
-    fetch('http://localhost:3000/api/users/getAll')
-      .then((res) => res.json())
-      .then((data) => {
-        setUsers(data)
-        setLoading(false)
-      })
+  const [thumb, setThumb] = useState(values?.step_images[0] ? values?.step_images[0] : "")
+  const {data: {user}} = useSession();
+  const {Cloudinary} = useCloudinary();
 
-    fetch('http://localhost:3000/api/houses/getAll')
-    .then((res) => res.json())
-    .then((data) => {
-      setHouses(data)
-      setLoading(false)
-    })
-  }, [])
+  const handleUpload = (event) => {
+    event.preventDefault()
+    if(!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || !process.env.NEXT_PUBLIC_CLOUDINARY_PRESET){
+        console.log("Enviroment variables are missing")
+    }else{
+        // @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const myWidget = cloudinary.createUploadWidget({
+            cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, 
+            uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_PRESET,
+            sources: ['local', 'camera'],
+            folder: "IC"+ "/" + user.email + "/"
+        }, 
+            (error, result) => { 
+                if (!error && result && result.event === "success") { 
+                    console.log('Done! Here is the image info: ', result.info);
+                    setThumb(result.info.public_id) 
+                }
+            }
+        )
+        myWidget.open()
+    }
+  };
 
-  if (notReady) return <p>Loading...</p>
 
   return (
+
     <form
       onSubmit={handleSubmit((data) => 
         onSubmit({
-            ...data,
-        })
+          ...data,
+          ...{
+              ...{img_url: thumb}
+          }
+      })
     )}>
+
       <div className="space-y-12 sm:space-y-16">
         <div>
-          
           <div className="space-y-8 border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10">
+            { thumb && (<>
+                <div className="flex border-2 border-black rounded-2xl p-2 w-2/3 m-auto mb-6 mt-6">
+                    <AdvancedImage className="rounded-2xl" cldImg={Cloudinary.image(thumb).resize(thumbnail().width(150).height(150))} />
+                    <TrashIcon className="w-8 h-8 cursor-pointer m-16" onClick={() => setThumb("")}/>
+                </div>
+                <hr/>
+                {JSON.stringify(thumb)}
+            </>)}
+            { !thumb && (<>
+                <div className='m-2 flex'>
+                    <div className="flex justify-center items-center w-full">
+                        <label htmlFor="dropzone-file" className="flex flex-col justify-center items-center w-full h-64 bg-rose-100 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-rose-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 mt-5">
+                            <div className="flex flex-col justify-center items-center pt-5 pb-6">
+                                <svg aria-hidden="true" className="mb-3 w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span></p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                            </div>
+                            <input id="dropzone-file" type="file" className="hidden" onClick={handleUpload} />
+                        </label>
+                    </div>
+                </div>
+            </>)}
 
             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-                Customer
-              </label>
-              <div className="mt-2 sm:col-span-2 sm:mt-0">
-                <select
-                  id="visitor_id"
-                  {...register("visitor_id", {required: true})}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                >
-                  <option disabled> Select a Customer</option>
-                  {users.map((user) => (
-                    <option key={user.id} value={user.id}> {user.id} :: {user.name} - {user.email}</option> 
-                  ))}
-                </select>
-              </div>
-              <h3 className="font-bold text-red-600">
-                {errors.visitor_id && (
-                    <span data-test="name-error"> Customer is required</span>
-                )}
-              </h3>
-            </div>
-
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-                Stays At: 
-              </label>
-              <div className="mt-2 sm:col-span-2 sm:mt-0">
-                <select
-                  id="house_id"
-                  {...register("house_id", {required: true})}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                >
-                  <option disabled> Select a House</option>
-                  {houses.map((house) => (
-                    <option key={house.id} value={house.id}>{house.id} :: {house.house_name} - {house.address_line1} {house.address_line2}. Owner: {house.Users.name}  {house.Users.email}</option> 
-                  ))}
-                </select>
-              </div>
-              <h3 className="font-bold text-red-600">
-                {errors.house_id && (
-                    <span data-test="name-error"> House is required</span>
-                )}
-              </h3>
-            </div>
-
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-              <label htmlFor="start_date" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-                Arrival
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
+                Value
               </label>
               <div className="mt-2 sm:col-span-2 sm:mt-0">
                 <input
-                  type="datetime-local"
-                  {...register("start_date", {required: true})}
-                  id="start_date"
-                  autoComplete="start_date"
+                  type="text"
+                  {...register("value", {required: true})}
+                  id="value"
+                  autoComplete="value"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 />
               </div>
               <h3 className="font-bold text-red-600">
-                {errors.start_date && (
-                    <span data-test="name-error"> Start Date is required</span>
+                {errors.value && (
+                    <span data-test="name-error"> Value is required</span>
                 )}
               </h3>
             </div>
+            <input
+              type="hidden"
+              {...register("booking_id", {required: true})}
+              id="booking_id"
+              value={currentBooking.id}
+            />
 
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-              <label htmlFor="end_date" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-                Departure
-              </label>
-              <div className="mt-2 sm:col-span-2 sm:mt-0">
-                <input
-                  type="datetime-local"
-                  {...register("end_date", {required: true})}
-                  id="end_date"
-                  autoComplete="end_date"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                />
-              </div>
-              <h3 className="font-bold text-red-600">
-                {errors.end_date && (
-                    <span data-test="name-error"> End Date is required</span>
-                )}
-              </h3>
-            </div>
+            <input
+              type="hidden"
+              {...register("posted_by", {required: true})}
+              id="posted_by"
+              value={currentBooking.visitor_id}
+            />
 
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-                Status
-              </label>
-              <div className="mt-2 sm:col-span-2 sm:mt-0">
-                <select
-                  id="country"
-                  name="country"
-                  autoComplete="country-name"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                >
-                  <option>Confirmed</option>
-                  <option>Pending</option>
-                </select>
-              </div>
-              <h3 className="font-bold text-red-600">
-                {errors.status && (
-                    <span data-test="name-error"> Status is required</span>
-                )}
-              </h3>
-            </div>
+            <input
+              type="hidden"
+              {...register("kw_h_cost_when_created", {required: true})}
+              id="kw_h_cost_when_created"
+              value={currentBooking.Houses.kw_h_cost}
+            />
+            
+            
             <div className="flex items-center justify-end pt-6 border-solid border-slate-200 rounded-b">
               <input
                 className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
