@@ -1,6 +1,12 @@
 'use client';
 import { CalendarIcon, ChartBarIcon, FolderIcon, HomeIcon, InboxIcon, UsersIcon, EyeDropperIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react';
+import {useSession, signIn, signOut} from "next-auth/react"
+import { redirect } from "next/navigation";
+
+function logout_redirect(){
+  signOut()
+}
 
 const navigation = [
   { name: 'Bookings', icon: FolderIcon, href: '/dashboard', current: true },
@@ -43,7 +49,7 @@ export default function Navigation() {
             </div>
             <div className="ml-3">
               <p className="text-lg font-bold text-black">Timon Cook</p>
-              <p className="text-sm font-medium text-black group-hover:text-white">View profile</p>
+              <p className="text-sm font-medium text-black group-hover:text-white" onClick={() => logout_redirect()}>Log Out</p>
             </div>
           </div>
         </a>

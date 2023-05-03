@@ -184,7 +184,7 @@ function getAvailableHouses(){
 
                     {houses.length > 0 ? (
                       houses.map((house) => (
-                        <option key={house.id} value={house.id} disabled={house.available==="false"}>{house.available=="true" && ("AVAILABLE")} {house.available=="false" && ("UNAVAILABLE")} {house.house_name} - {house.address_line1} {house.address_line2}. Owner: {house.name} </option> 
+                        <option key={house.id} value={house.house_id} disabled={house.available==="false"}>{house.available=="true" && ("AVAILABLE")} {house.available=="false" && ("UNAVAILABLE")} {house.house_name} - {house.address_line1} {house.address_line2}. Owner: {house.name} </option> 
                       ))) : (
                       <tr>
                           <td>No houses available</td>

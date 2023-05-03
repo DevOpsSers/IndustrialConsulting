@@ -3,7 +3,12 @@ import { CalendarIcon, ChartBarIcon, FolderIcon, HomeIcon, InboxIcon, UsersIcon 
 import Image from 'next/image';
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
-import {useSession} from "next-auth/react"
+import {useSession, signIn, signOut} from "next-auth/react"
+import { redirect } from "next/navigation";
+
+function logout_redirect(){
+  signOut()
+}
 
 const navigation = [
   { name: 'Bookings', icon: FolderIcon, href: '/dashboard/bookings', current: true },
@@ -33,7 +38,7 @@ export default function Navigation() {
                 </div>
                 <div className="ml-3">
                   <p className="text-lg font-bold text-black">{session.user.name}</p>
-                  <p className="text-sm font-medium text-black group-hover:text-white">View profile</p>
+                  <p className="text-sm font-medium text-black group-hover:text-white" onClick={() => logout_redirect()}>Log Out</p>
                 </div>
               </div>
             )}
