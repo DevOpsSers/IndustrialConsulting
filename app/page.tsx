@@ -1,33 +1,84 @@
-"use client"
+"use client";
 import React from "react";
-import {useSession, signIn, signOut} from "next-auth/react"
+import Image from "next/image";
+import { useSession, signIn, signOut } from "next-auth/react";
+import house from ".././public/images/forest-house.jpg";
+export default function Dashboard() {
+  const { data: session } = useSession();
 
-export default function Dashboard(){
-  const {data: session} = useSession()
+  return (
+    <div>
+      {/**JSON.stringify(session)*/}
 
-  return( 
-      <div className="m-5">
-        {JSON.stringify(session)}
-        <br/>
-        
+      {session?.user && (
+        <div>
 
-          {session?.user  && (
-            <div>
-              <div>Welcome {session.user.email}</div>
-              <button onClick={()=>signOut()}>Sign Out</button>
 
+          <div className="bg-gradient-to-tl from-lime-100 to-green-200 w-full h-screen py-16 px-4">
+            <h1 className="text-3xl font-bold tracking-tight text-yellow-700 sm:text-4xl text-center">
+              New Forest Escapes
+            </h1>
+            <div className="relative isolate px-6 pt-14 lg:px-8">
+              <div className="mx-auto max-w-2xl py-12 sm:py-12 lg:py-12">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold tracking-tight text-yellow-700 sm:text-4xl">
+                  Welcome {session.user.email}
+                  </h1>
+                  <div className="mt-10 flex items-center justify-center gap-x-6">
+                    <button
+                      onClick={() => signOut()}
+                      className="rounded-md bg-lime-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-          {!session  && (
-            <div>
-              <div> Not signed in</div>
-              <button onClick={()=>signIn()}>Sign In</button>
-              <br/>
-              <button onClick={()=>signOut()}>Sign Out</button>
-
+          </div>
+        </div>
+      )}
+      {!session && (
+        <div>
+          <div className="bg-gradient-to-tl from-lime-100 to-green-200 w-full py-16 px-4">
+            <h1 className="text-5xl font-bold tracking-tight text-yellow-700 sm:text-5xl text-center">
+              New Forest Escapes
+            </h1>
+            <div className="relative isolate px-6 pt-14 lg:px-8">
+              <div className="mx-auto max-w-2xl py-5 sm:py-12 lg:py-12">
+                <div className=" sm:mb-8 sm:flex sm:justify-center">
+                  <div className="relative rounded-full py-1 px-3 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+                    <Image
+                      className="h-auto max-w-full rounded-lg "
+                      src={house}
+                      alt={"forest house"}
+                      width={500}
+                      height={300}
+                    ></Image>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold tracking-tight text-yellow-700 sm:text-4xl">
+                    Energy responsable housing
+                  </h1>
+                  <p className="mt-6 text-lg leading-8 text-yellow-700">
+                    New forest housing is a company that rent houses in the New
+                    forest area with a responsible managin of energy.
+                  </p>
+                  <div className="mt-10 flex items-center justify-center gap-x-6">
+                    <button
+                      onClick={() => signIn()}
+                      className="rounded-md bg-lime-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                      Sign In
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-      </div>
-       
-  )
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
