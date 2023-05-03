@@ -8,6 +8,7 @@ import Alert from "../utils/Alert";
 import ReadsHistory from "./ReadsHistory";
 import Consumed from "./Consumed"
 import {useSession} from "next-auth/react"
+import { json } from "stream/consumers";
 
 async function getCurrentBooking(){
     const response = await fetch(`http://localhost:3000/api/users/getCurrentBooking`)
@@ -67,7 +68,9 @@ export default function ReadsTable() {
         
     return (
         <div className="">
-            
+        {currentBooking && (
+
+        <> 
             <div className="mt-8 pt-8 pb-8 font-bold text-2xl">Consumtion</div>
             {isError && 
                 <Alert
@@ -82,9 +85,8 @@ export default function ReadsTable() {
                 />
             }
             <div  className="bg-white rounded-lg">  
-                <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 p-4 text-center">
+                <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 p-4 text-center">
                     <button className={`rounded-xl p-2 ${section=="consumed" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('consumed')}>Consumed Energy</button>
-                    <button className={`rounded-xl p-2 ${section=="house" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('house')}>House</button>
                     <button className={`rounded-xl p-2 ${section=="history" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('history')}>History</button>
                     <div></div> 
                     <div className="bg-blue-100 rounded-xl p-2 hover:bg-blue-300 hover:cursor-pointer" onClick={() => setShowModal(true)}>+ Add Read</div> 
@@ -140,7 +142,8 @@ export default function ReadsTable() {
                 </div>
                 <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                 </>
-            ) : null}
+            ) : null}</>)} 
         </div>
+          
     )
 }

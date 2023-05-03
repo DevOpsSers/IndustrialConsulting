@@ -15,9 +15,7 @@ export default function RootLayout({
         <div className="lg:w-3/12">
           <DashboardNavigation/>
         </div>
-        {/* <div className="w-12/12 lg:hidden">
-          <MobileNavigation/>
-        </div> */}
+
         <div className='w-8/12 h-screen ml-auto mr-auto'>
           {children}
         </div>

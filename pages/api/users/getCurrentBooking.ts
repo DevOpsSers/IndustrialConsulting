@@ -41,7 +41,7 @@ export default async function Handler( req: NextApiRequest, res: NextApiResponse
             })
 
             if(!booking){
-                res.status(404).json({message: 'Booking Not Found'})
+                res.status(404)
             }
 
             res.status(200).json(booking)

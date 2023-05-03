@@ -17,7 +17,8 @@ export default async function Handler( req: NextApiRequest, res: NextApiResponse
     if(req.method === "POST"){
         
         try{
-            console.log(req.query)
+            console.log("ESTO LLEGA")
+            console.log(req.body)
             var validation = await bookingSchema.validate(req.query)
             .then(valid => console.log(valid))
             .catch(error => console.error(error.errors, error.path));

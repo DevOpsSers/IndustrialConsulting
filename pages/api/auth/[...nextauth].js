@@ -7,12 +7,15 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const authOptions = {
-  // callbacks: {
-  //   async session({ session, user}){
-  //     session.user.id = user.id;
-  //     return session
-  //   }
-  // },
+  callbacks: {
+    async session({ session, user }) {
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.role = user.role;
+      }
+      return session;
+    },
+  },
   adapter: PrismaAdapter(prisma),
   secret: process.env.AUTH_SECRET,
   // Configure one or more authentication providers
