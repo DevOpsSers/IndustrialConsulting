@@ -43,8 +43,7 @@ export default function HouseShow({house_id}) {
             <div  className="bg-white rounded-lg">  
                 <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 p-4 text-center">
                     <button className={`rounded-xl p-2 ${section=="general" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('general')}>General</button>
-                    <button className={`rounded-xl p-2 ${section=="consumption" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('consumption')}>Consumption</button>
-                    <button className={`rounded-xl p-2 ${section=="bookings" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('bookings')}>Bookings</button>
+                   
                     <button className={`rounded-xl p-2 ${section=="qr" ? 'bg-blue-300 font-bold' : 'bg-blue-100'} `} onClick={(e) => setSection('qr')}>See qr</button>
                 </div>
                 <hr/>
@@ -56,7 +55,7 @@ export default function HouseShow({house_id}) {
                         <HouseShowGeneral house={house}/>
                     )} 
                     {section=="qr" && (
-                        <QR url="carajuela"/>
+                        <QR url="http://localhost:3000/visitors"/>
                     )}
                     {section=="bookings" && (
                         <Bookings house_id={house.id}/>
